@@ -1,0 +1,18 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Backend
+backend/coverage/
+/server
+
+# Embedded frontend build copied into the backend for go:embed
+backend/internal/staticfiles/dist/*
+!backend/internal/staticfiles/dist/.gitkeep
+
+# OS / editor
+.DS_Store
+
+# Local Claude Code session settings
+.claude/
