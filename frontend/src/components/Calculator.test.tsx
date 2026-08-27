@@ -20,6 +20,41 @@ describe('Calculator', () => {
     expect(screen.getByTestId('display')).toHaveTextContent('0')
   })
 
+  it('shows a running expression line once an operator is confirmed', async () => {
+    const user = userEvent.setup()
+    render(<Calculator />)
+
+    expect(screen.getByTestId('display-expression')).toHaveTextContent('')
+
+    await pressDigits(user, '4')
+    await user.click(screen.getByRole('button', { name: '+' }))
+
+    expect(screen.getByTestId('display-expression')).toHaveTextContent('4 +')
+  })
+
+  it('supports entry via the physical keyboard', async () => {
+    vi.spyOn(client, 'calculate').mockResolvedValue({ operation: 'add', operands: [4, 5], result: 9 })
+    const user = userEvent.setup()
+    render(<Calculator />)
+
+    await user.keyboard('4+5')
+    await user.keyboard('{Enter}')
+
+    await waitFor(() => expect(screen.getByTestId('display')).toHaveTextContent('9'))
+    expect(client.calculate).toHaveBeenCalledWith('add', [4, 5])
+  })
+
+  it('clears via the Escape key', async () => {
+    const user = userEvent.setup()
+    render(<Calculator />)
+
+    await user.keyboard('42')
+    expect(screen.getByTestId('display')).toHaveTextContent('42')
+
+    await user.keyboard('{Escape}')
+    expect(screen.getByTestId('display')).toHaveTextContent('0')
+  })
+
   it('types a number, confirms it with an operator, types the second number, and computes on =', async () => {
     vi.spyOn(client, 'calculate').mockResolvedValue({ operation: 'add', operands: [4, 5], result: 9 })
     const user = userEvent.setup()

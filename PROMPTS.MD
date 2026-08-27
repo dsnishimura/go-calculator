@@ -47,3 +47,14 @@ and getting the snap-packaged Docker daemon usable (`removable-media` interface,
 `docker` group, socket ownership) needed a few back-and-forth troubleshooting prompts —
 not reproduced verbatim here since they were session-specific debugging rather than
 reusable working prompts.
+
+> `/frontend-design Improve the layout design and the usability of the calculator`
+
+This drove a visual/usability pass on the frontend only (backend untouched): the digit
+keypad and operator keys were merged into one `CalculatorPad` grid laid out like Apple's
+own scientific-calculator keyboard (a muted top row for `AC`/`xʸ`/`√`/`%`, an orange column
+for the four chainable arithmetic operators, and a full-width `=` bar); a small "expression
+line" above the display now shows the confirmed operand and operator (e.g. `4 +`); the
+keypad gained physical-keyboard support (digits, operators, Enter, Escape); and
+`:focus-visible` rings plus a reduced-motion-aware error transition were added for
+accessibility.

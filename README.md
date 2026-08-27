@@ -17,7 +17,7 @@ frontend styled after the iOS Calculator app, served together as a single contai
 └── frontend/                # Vite + React + TypeScript app
     └── src/
         ├── api/            # fetch wrapper for the backend
-        ├── components/     # Calculator, Display, Keypad, OperationSelector, ...
+        ├── components/     # Calculator, CalculatorPad, Display, ErrorMessage
         └── types/          # shared calculator types
 ```
 
@@ -162,6 +162,23 @@ iOS calculator uses — rather than two free-text operand fields:
   a second number or an `=` press.
 - `AC` resets memory to 0 and clears the display.
 
+A small **expression line** above the main display shows the confirmed number and operator
+(e.g. `4 +`) while the second number is being typed, so the pending calculation stays
+legible instead of being implied only by a highlighted key.
+
+The keypad also responds to a **physical keyboard**: digits, `.`, `+ - * / % ^`, `Enter`/`=`
+for equals, and `Escape` for `AC`.
+
+### Layout
+
+The keypad follows Apple's own scientific-calculator arrangement rather than the plain
+4-operator grid, since this calculator has seven operations, not four: `AC` and the three
+modifier keys (`xʸ`, `√`, `%`) sit in a muted top row, digits fill the main grid with the
+four chainable arithmetic operators in a column of vivid orange to their right, and `=` is
+a full-width closing action at the bottom — the one deliberate departure from a literal
+iPhone key shape, sized and colored to read as "this is the button that talks to the
+server," distinct from the momentary operator presses.
+
 ## Design rationale
 
 - **One endpoint, not one per operation.** `POST /api/calculate` with an `operation`
@@ -185,8 +202,11 @@ iOS calculator uses — rather than two free-text operand fields:
   its structured error handling is exercised end-to-end.
 - **No UI framework.** The frontend is plain CSS (flexbox + one mobile breakpoint), which
   is proportionate to "basic mobile support" in the spec and keeps the iOS-Calculator-style
-  visuals (circular operator keys, dark digit keys, orange accents, light/dark theme via
-  `prefers-color-scheme`) simple to reason about.
+  visuals simple to reason about: dark digit keys, a muted tone for the `xʸ`/`√`/`%`
+  modifier keys, and vivid orange reserved for the four chainable arithmetic operators —
+  a two-tier hierarchy so the seven operations stay scannable instead of reading as one
+  undifferentiated row. Light/dark theme follows `prefers-color-scheme`, same as the
+  native app.
 
 ## Testing & coverage
 
@@ -203,7 +223,8 @@ npm run test -- --coverage   # Vitest + v8 coverage; report at coverage/index.ht
 ```
 
 Current coverage: `internal/calculator` 100%, `internal/api` ~80% (table-driven tests for
-every operation, error path, and the 400/422/405 status mapping); frontend ~93% overall,
+every operation, error path, and the 400/422/405 status mapping); frontend ~95% overall,
 100% of statements in every component, including mocked-`fetch` success/error/network-failure
-cases for the API client and a full keypad-driven interaction test suite for `Calculator`
-(confirm-on-operator, chaining, the unary `√` modifier, and AC).
+cases for the API client and a full interaction test suite for `Calculator` and
+`CalculatorPad` (confirm-on-operator, chaining, the unary `√` modifier, the expression line,
+keyboard entry, and AC).

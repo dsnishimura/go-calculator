@@ -1,14 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { calculate, ApiError, NetworkError } from '../api/calculatorClient'
-import type { Operation } from '../types/calculator'
+import { OPERATION_LABELS, type Operation } from '../types/calculator'
+import { CalculatorPad } from './CalculatorPad'
 import { Display } from './Display'
 import { ErrorMessage } from './ErrorMessage'
-import { Keypad } from './Keypad'
-import { OperationSelector } from './OperationSelector'
 
 // sqrt is unary: it acts on the currently displayed value immediately,
 // rather than confirming an operand and waiting for a second one.
 const UNARY_OPERATIONS: ReadonlySet<Operation> = new Set(['sqrt'])
+
+const KEYBOARD_OPERATORS: Record<string, Operation> = {
+  '+': 'add',
+  '-': 'subtract',
+  '*': 'multiply',
+  '/': 'divide',
+  '%': 'percentage',
+  '^': 'power',
+}
 
 function formatResult(value: number): string {
   if (!Number.isFinite(value)) return String(value)
@@ -120,25 +128,52 @@ export function Calculator() {
     setError(null)
   }
 
+  // Physical-keyboard support: digits, ".", the four arithmetic symbols
+  // plus "%" and "^", Enter/"=" for equals, Escape for AC.
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+
+      const { key } = event
+      if (/^[0-9]$/.test(key) || key === '.') {
+        handleDigit(key)
+        return
+      }
+      if (key in KEYBOARD_OPERATORS) {
+        event.preventDefault()
+        handleOperatorPress(KEYBOARD_OPERATORS[key])
+        return
+      }
+      if (key === 'Enter' || key === '=') {
+        event.preventDefault()
+        handleEquals()
+        return
+      }
+      if (key === 'Escape') {
+        handleClear()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [display, memory, pendingOp, awaitingNewInput])
+
+  const expression = pendingOp ? `${formatResult(memory)} ${OPERATION_LABELS[pendingOp]}` : undefined
+
   return (
     <div className="calculator">
-      <Display value={display} />
+      <Display value={display} expression={expression} />
       <ErrorMessage message={error} />
-      <Keypad onPress={handleDigit} />
-      <OperationSelector pendingOperation={pendingOp} onPress={handleOperatorPress} />
-      <div className="action-row">
-        <button type="button" className="action-button action-button--clear" onClick={handleClear}>
-          AC
-        </button>
-        <button
-          type="button"
-          className="action-button action-button--equals"
-          onClick={handleEquals}
-          disabled={isLoading || pendingOp === null}
-        >
-          {isLoading ? '…' : '='}
-        </button>
-      </div>
+      <CalculatorPad
+        pendingOperation={pendingOp}
+        isLoading={isLoading}
+        canEquals={pendingOp !== null}
+        onDigit={handleDigit}
+        onOperator={handleOperatorPress}
+        onEquals={handleEquals}
+        onClear={handleClear}
+      />
     </div>
   )
 }
