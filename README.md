@@ -185,9 +185,11 @@ server," distinct from the momentary operator presses.
 
 ### Theme
 
-The app follows the OS's `prefers-color-scheme` by default, but a switch in the top-right
-corner lets you override it — it initializes to whatever the OS preference is, then behaves
-as a plain manual toggle from there. The switch sets `data-theme` on `<html>`, which a CSS
+The app follows the OS's `prefers-color-scheme` by default, but a switch fixed to the
+viewport's top-right corner (independent of the calculator card, so it never affects the
+card's own centering or size) lets you override it — it initializes to whatever the OS
+preference is, then behaves as a plain manual toggle from there. The switch sets
+`data-theme` on `<html>`, which a CSS
 rule of equal-or-higher specificity than the `prefers-color-scheme` query uses to override
 the OS setting whichever way you pick.
 

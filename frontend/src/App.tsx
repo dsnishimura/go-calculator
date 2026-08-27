@@ -15,9 +15,7 @@ function App() {
 
   return (
     <main className="app">
-      <div className="app-header">
-        <ThemeToggle theme={theme} onToggle={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} />
-      </div>
+      <ThemeToggle theme={theme} onToggle={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} />
       <Calculator />
     </main>
   )

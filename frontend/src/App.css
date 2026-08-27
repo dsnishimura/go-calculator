@@ -104,23 +104,20 @@
 
 .app {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 12px;
+  align-items: center;
   min-height: 100vh;
   background: var(--app-bg);
   padding: 24px 16px;
 }
 
-.app-header {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  justify-content: flex-end;
-}
-
+/* Fixed to the viewport corner, independent of the calculator card, so its
+   presence never affects the card's own centering or dimensions. */
 .theme-toggle {
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top));
+  right: max(20px, env(safe-area-inset-right));
+  z-index: 10;
   display: inline-flex;
   align-items: center;
   gap: 8px;
