@@ -11,9 +11,9 @@
   --display-color: #ffffff;
   --error-bg: #3a1414;
   --error-color: #ff8a80;
-  --input-bg: #1c1c1e;
-  --input-color: #ffffff;
-  --input-placeholder: #6b6b6d;
+  --key-digit-bg: #333333;
+  --key-digit-bg-active: #555555;
+  --key-digit-color: #ffffff;
   --key-fn-bg: #a5a5a5;
   --key-fn-bg-active: #d9d9d9;
   --key-fn-color: #000000;
@@ -31,9 +31,9 @@
     --display-color: #1c1c1e;
     --error-bg: #ffe1de;
     --error-color: #b3261e;
-    --input-bg: #ffffff;
-    --input-color: #1c1c1e;
-    --input-placeholder: #b0b0b5;
+    --key-digit-bg: #ffffff;
+    --key-digit-bg-active: #e4e4e9;
+    --key-digit-color: #1c1c1e;
     --key-fn-bg: #d1d1d6;
     --key-fn-bg-active: #bcbcc1;
     --key-fn-color: #1c1c1e;
@@ -86,31 +86,33 @@
   text-align: right;
 }
 
-.operand-inputs {
-  display: flex;
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
-.operand-input {
-  flex: 1;
-  min-width: 0;
-  background: var(--input-bg);
-  color: var(--input-color);
+.key-button {
+  background: var(--key-digit-bg);
+  color: var(--key-digit-color);
   border: none;
   border-radius: 16px;
-  padding: 14px 16px;
-  font-size: 1.25rem;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
+  padding: 16px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.operand-input::placeholder {
-  color: var(--input-placeholder);
+.key-button:hover,
+.key-button:active {
+  background: var(--key-digit-bg-active);
 }
 
-.operand-input:focus {
-  outline: 2px solid var(--key-op-bg);
-  outline-offset: 1px;
+.key-button--wide {
+  grid-column: span 2;
+  text-align: left;
+  padding-left: 26px;
 }
 
 .operation-selector {
@@ -198,7 +200,7 @@
     min-height: 44px;
   }
 
-  .operand-input {
+  .key-button {
     min-height: 44px;
   }
 }

@@ -19,6 +19,31 @@ any project code was written.
 
 > `Install Docker via Snap please`
 
-Everything else in this session — the backend package, the frontend components, the
-Dockerfile, and this documentation — was built by following the approved plan
-mechanically rather than from further free-form prompting.
+Everything up through the Dockerfile and initial README/PROMPTS.MD was built by following
+the approved plan mechanically rather than from further free-form prompting.
+
+> `I need some to add more features. should I do it directly to claude md?`
+
+Answered: yes, CLAUDE.MD is the spec of record — added directly there.
+
+CLAUDE.MD was then updated with new usability requirements:
+
+```
+# Usability Features
+- Numeric keyboard for entry
+- One number comes from keyboard and the other comes from memory starting with 0
+- The confirmation of the first number imputed should be the click of any operator by the user
+```
+
+This drove a redesign of the frontend interaction model: a digit `Keypad` component
+replaced the two free-text operand inputs, and `Calculator.tsx` now holds a running
+`memory` accumulator (starting at 0) plus a `pendingOp`, confirming the typed number into
+memory when any operator is pressed — matching a physical/iOS calculator's sequential
+entry rather than "fill in two fields and submit."
+
+Along the way, debugging a Docker `docker run` showing only a `.gitkeep` link (a stale
+local `go run` process left over from manual testing, unrelated to the Dockerfile itself)
+and getting the snap-packaged Docker daemon usable (`removable-media` interface,
+`docker` group, socket ownership) needed a few back-and-forth troubleshooting prompts —
+not reproduced verbatim here since they were session-specific debugging rather than
+reusable working prompts.

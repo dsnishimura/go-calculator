@@ -1,20 +1,20 @@
 import { OPERATIONS, OPERATION_LABELS, type Operation } from '../types/calculator'
 
 interface OperationSelectorProps {
-  value: Operation
-  onChange: (operation: Operation) => void
+  pendingOperation: Operation | null
+  onPress: (operation: Operation) => void
 }
 
-export function OperationSelector({ value, onChange }: OperationSelectorProps) {
+export function OperationSelector({ pendingOperation, onPress }: OperationSelectorProps) {
   return (
     <div className="operation-selector" role="group" aria-label="Operation">
       {OPERATIONS.map((operation) => (
         <button
           key={operation}
           type="button"
-          className={`op-button${operation === value ? ' op-button--selected' : ''}`}
-          aria-pressed={operation === value}
-          onClick={() => onChange(operation)}
+          className={`op-button${operation === pendingOperation ? ' op-button--selected' : ''}`}
+          aria-pressed={operation === pendingOperation}
+          onClick={() => onPress(operation)}
         >
           {OPERATION_LABELS[operation]}
         </button>

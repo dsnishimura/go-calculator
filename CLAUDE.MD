@@ -1,6 +1,11 @@
 # Objective
 Build a full-stack calculator application with a React frontend and a backend microservice. The frontend should consume the backend API to perform basic and advanced arithmetic operations. Focus on clean design, maintainable code, and testable architecture.Requirements
 
+# Usability Features
+- Numeric keyboard for entry
+- One number comes from keyboard and the other comes from memory starting with 0
+- The confirmation of the first number imputed should be the click of any operator by the user
+
 # Math Operations
 - Addition
 - Subtraction 

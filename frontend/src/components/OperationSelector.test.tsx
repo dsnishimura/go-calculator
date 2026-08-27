@@ -4,20 +4,25 @@ import userEvent from '@testing-library/user-event'
 import { OperationSelector } from './OperationSelector'
 
 describe('OperationSelector', () => {
-  it('renders a button for every operation and marks the selected one', () => {
-    render(<OperationSelector value="add" onChange={() => {}} />)
-    const selected = screen.getByRole('button', { name: '+' })
-    expect(selected).toHaveAttribute('aria-pressed', 'true')
+  it('renders a button for every operation and marks the pending one', () => {
+    render(<OperationSelector pendingOperation="add" onPress={() => {}} />)
+    const pending = screen.getByRole('button', { name: '+' })
+    expect(pending).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: '√' })).toHaveAttribute('aria-pressed', 'false')
   })
 
-  it('calls onChange with the clicked operation', async () => {
+  it('marks no operation as pending when null', () => {
+    render(<OperationSelector pendingOperation={null} onPress={() => {}} />)
+    expect(screen.getByRole('button', { name: '+' })).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('calls onPress with the clicked operation', async () => {
     const user = userEvent.setup()
-    const onChange = vi.fn()
-    render(<OperationSelector value="add" onChange={onChange} />)
+    const onPress = vi.fn()
+    render(<OperationSelector pendingOperation={null} onPress={onPress} />)
 
     await user.click(screen.getByRole('button', { name: '÷' }))
 
-    expect(onChange).toHaveBeenCalledWith('divide')
+    expect(onPress).toHaveBeenCalledWith('divide')
   })
 })

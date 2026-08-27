@@ -17,9 +17,8 @@ frontend styled after the iOS Calculator app, served together as a single contai
 └── frontend/                # Vite + React + TypeScript app
     └── src/
         ├── api/            # fetch wrapper for the backend
-        ├── components/     # Calculator, Display, OperationSelector, ...
-        ├── types/          # shared calculator types
-        └── utils/          # client-side validation
+        ├── components/     # Calculator, Display, Keypad, OperationSelector, ...
+        └── types/          # shared calculator types
 ```
 
 At runtime there is a single Go binary. It exposes `POST /api/calculate` and `GET /health`,
@@ -144,6 +143,25 @@ $ curl -s localhost:8080/health
 {"status":"ok"}
 ```
 
+## Usability: how the keypad works
+
+The frontend uses a sequential, keypad-driven entry model — the same one a physical or
+iOS calculator uses — rather than two free-text operand fields:
+
+- There's a running **memory** value, starting at **0**, and a **display** showing the
+  number currently being typed.
+- Type a number on the keypad, then press an operator (`+`, `−`, `×`, `÷`, `xʸ`, `%`).
+  That press **confirms** the typed number: it becomes (or combines into) memory, and the
+  app now waits for the second number.
+- Type the second number and press `=` to send `{memory, typed}` to the backend and show
+  the result — which also becomes the new memory, so you can keep chaining
+  (`4 + 5 = 9`, then `× 2 =` computes `18`).
+- Pressing another operator instead of `=` also confirms the in-flight number and chains
+  immediately, exactly like a physical calculator.
+- `√` is unary: it acts on whatever's currently on screen immediately, without waiting for
+  a second number or an `=` press.
+- `AC` resets memory to 0 and clears the display.
+
 ## Design rationale
 
 - **One endpoint, not one per operation.** `POST /api/calculate` with an `operation`
@@ -161,13 +179,13 @@ $ curl -s localhost:8080/health
   Dockerfile), and a frontend-only change still requires rebuilding the Go binary —
   acceptable for this deployment target.
 - **400 vs 422**, see API reference above.
-- **Client-side validation is intentionally shallow.** `utils/validation.ts` only checks
-  that operands are present and finite; it does not pre-check divide-by-zero or negative
-  square roots. Those are sent to the backend so its structured error handling is
-  exercised end-to-end rather than short-circuited by the client.
+- **No client-side numeric validation needed.** Because input only ever comes from the
+  keypad (see Usability above), the display can never hold a non-numeric or malformed
+  value — invalid *math* (divide by zero, negative sqrt) is still sent to the backend so
+  its structured error handling is exercised end-to-end.
 - **No UI framework.** The frontend is plain CSS (flexbox + one mobile breakpoint), which
   is proportionate to "basic mobile support" in the spec and keeps the iOS-Calculator-style
-  visuals (circular operator keys, orange accents, light/dark theme via
+  visuals (circular operator keys, dark digit keys, orange accents, light/dark theme via
   `prefers-color-scheme`) simple to reason about.
 
 ## Testing & coverage
@@ -185,7 +203,7 @@ npm run test -- --coverage   # Vitest + v8 coverage; report at coverage/index.ht
 ```
 
 Current coverage: `internal/calculator` 100%, `internal/api` ~80% (table-driven tests for
-every operation, error path, and the 400/422/405 status mapping); frontend ~92% overall
-(components, the API client, and client-side validation are all covered via Vitest +
-React Testing Library, including mocked-`fetch` success/error/network-failure cases for
-the API client and a full interaction test for the `Calculator` component).
+every operation, error path, and the 400/422/405 status mapping); frontend ~93% overall,
+100% of statements in every component, including mocked-`fetch` success/error/network-failure
+cases for the API client and a full keypad-driven interaction test suite for `Calculator`
+(confirm-on-operator, chaining, the unary `√` modifier, and AC).
