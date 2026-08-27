@@ -120,6 +120,13 @@ export function Calculator() {
     setDisplay(formatResult(result))
   }
 
+  function handleToggleSign() {
+    if (display === '0') return
+    setError(null)
+    setDisplay(display.startsWith('-') ? display.slice(1) : '-' + display)
+    setAwaitingNewInput(false)
+  }
+
   function handleClear() {
     setDisplay('0')
     setMemory(0)
@@ -171,6 +178,7 @@ export function Calculator() {
         canEquals={pendingOp !== null}
         onDigit={handleDigit}
         onOperator={handleOperatorPress}
+        onToggleSign={handleToggleSign}
         onEquals={handleEquals}
         onClear={handleClear}
       />

@@ -6,6 +6,7 @@ interface CalculatorPadProps {
   canEquals: boolean
   onDigit: (key: string) => void
   onOperator: (operation: Operation) => void
+  onToggleSign: () => void
   onEquals: () => void
   onClear: () => void
 }
@@ -32,7 +33,7 @@ function OpKey({ operation, variant, pending, onOperator }: OpKeyProps) {
 
 /**
  * The full input surface: laid out like Apple's own scientific-mode
- * Calculator — a top row for AC plus the modifier/scientific keys (xʸ, √,
+ * Calculator — a top row for AC, ± and the modifier/scientific keys (xʸ, √,
  * %), digits with the four chainable arithmetic operators in the right
  * column, and "=" as a closing full-width action. Digits and operators are
  * combined here (rather than split across components) because they form one
@@ -44,6 +45,7 @@ export function CalculatorPad({
   canEquals,
   onDigit,
   onOperator,
+  onToggleSign,
   onEquals,
   onClear,
 }: CalculatorPadProps) {
@@ -54,6 +56,9 @@ export function CalculatorPad({
       <div className="pad-row">
         <button type="button" className="key key--fn" onClick={onClear}>
           AC
+        </button>
+        <button type="button" className="key key--fn" onClick={onToggleSign}>
+          ±
         </button>
         <OpKey operation="power" variant="sci" pending={isPending('power')} onOperator={onOperator} />
         <OpKey operation="sqrt" variant="sci" pending={isPending('sqrt')} onOperator={onOperator} />

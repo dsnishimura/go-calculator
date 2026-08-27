@@ -11,6 +11,7 @@ function renderPad(overrides: Partial<ComponentProps<typeof CalculatorPad>> = {}
     canEquals: true,
     onDigit: vi.fn(),
     onOperator: vi.fn(),
+    onToggleSign: vi.fn(),
     onEquals: vi.fn(),
     onClear: vi.fn(),
     ...overrides,
@@ -25,9 +26,16 @@ describe('CalculatorPad', () => {
     for (const digit of ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) {
       expect(screen.getByRole('button', { name: digit })).toBeInTheDocument()
     }
-    for (const symbol of ['.', '+', '−', '×', '÷', 'xʸ', '√', '%', 'AC', '=']) {
+    for (const symbol of ['.', '+', '−', '×', '÷', 'xʸ', '√', '%', 'AC', '±', '=']) {
       expect(screen.getByRole('button', { name: symbol })).toBeInTheDocument()
     }
+  })
+
+  it('calls onToggleSign when ± is pressed', async () => {
+    const user = userEvent.setup()
+    const props = renderPad()
+    await user.click(screen.getByRole('button', { name: '±' }))
+    expect(props.onToggleSign).toHaveBeenCalled()
   })
 
   it('calls onDigit with the pressed digit', async () => {
@@ -76,6 +84,7 @@ describe('CalculatorPad', () => {
         canEquals={false}
         onDigit={() => {}}
         onOperator={() => {}}
+        onToggleSign={() => {}}
         onEquals={() => {}}
         onClear={() => {}}
       />,
@@ -89,6 +98,7 @@ describe('CalculatorPad', () => {
         canEquals
         onDigit={() => {}}
         onOperator={() => {}}
+        onToggleSign={() => {}}
         onEquals={() => {}}
         onClear={() => {}}
       />,

@@ -20,6 +20,38 @@ describe('Calculator', () => {
     expect(screen.getByTestId('display')).toHaveTextContent('0')
   })
 
+  it('toggles the sign of the current entry, and builds a negative multi-digit number', async () => {
+    vi.spyOn(client, 'calculate').mockResolvedValue({ operation: 'add', operands: [-53, 2], result: -51 })
+    const user = userEvent.setup()
+    render(<Calculator />)
+
+    await pressDigits(user, '5')
+    await user.click(screen.getByRole('button', { name: '±' }))
+    expect(screen.getByTestId('display')).toHaveTextContent('-5')
+
+    await pressDigits(user, '3')
+    expect(screen.getByTestId('display')).toHaveTextContent('-53')
+
+    await user.click(screen.getByRole('button', { name: '±' }))
+    expect(screen.getByTestId('display')).toHaveTextContent('53')
+
+    await user.click(screen.getByRole('button', { name: '±' }))
+    await user.click(screen.getByRole('button', { name: '+' }))
+    await pressDigits(user, '2')
+    await user.click(screen.getByRole('button', { name: '=' }))
+
+    await waitFor(() => expect(client.calculate).toHaveBeenCalledWith('add', [-53, 2]))
+  })
+
+  it('does nothing when toggling the sign of an untouched 0', async () => {
+    const user = userEvent.setup()
+    render(<Calculator />)
+
+    await user.click(screen.getByRole('button', { name: '±' }))
+
+    expect(screen.getByTestId('display')).toHaveTextContent('0')
+  })
+
   it('shows a running expression line once an operator is confirmed', async () => {
     const user = userEvent.setup()
     render(<Calculator />)

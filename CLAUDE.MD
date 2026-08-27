@@ -1,5 +1,5 @@
 # Objective
-Build a full-stack calculator application with a React frontend and a backend microservice. The frontend should consume the backend API to perform basic and advanced arithmetic operations. Focus on clean design, maintainable code, and testable architecture.Requirements
+Build a full-stack calculator application with a React frontend and a backend microservice. The frontend should consume the backend API to perform basic and advanced arithmetic operations. Focus on clean design, maintainable code, and testable architecture.
 
 # Usability Features
 - Numeric keyboard for entry
@@ -7,6 +7,7 @@ Build a full-stack calculator application with a React frontend and a backend mi
 - The confirmation of the first number imputed should be the click of any operator by the user
 
 # Math Operations
+- User needs to able to oprate with decimal postive and negative nubers
 - Addition
 - Subtraction 
 - Multiplication 
@@ -50,4 +51,5 @@ The repo will be called go-calculator
 All the prompts used for working pourposes must be saved to PROMPTS.MD
 
 # Visuals
-Design that closely resembles iphone calculator for both light and dark theme
+Design that closely resembles iphone calculator for both light and dark theme.
+Need a toggle switch to change between the both teams but use the default theme as innitial state for it.

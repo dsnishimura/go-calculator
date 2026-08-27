@@ -17,7 +17,8 @@ frontend styled after the iOS Calculator app, served together as a single contai
 └── frontend/                # Vite + React + TypeScript app
     └── src/
         ├── api/            # fetch wrapper for the backend
-        ├── components/     # Calculator, CalculatorPad, Display, ErrorMessage
+        ├── components/     # Calculator, CalculatorPad, Display, ErrorMessage, ThemeToggle
+        ├── theme.ts        # Theme type + OS preference detection
         └── types/          # shared calculator types
 ```
 
@@ -160,6 +161,9 @@ iOS calculator uses — rather than two free-text operand fields:
   immediately, exactly like a physical calculator.
 - `√` is unary: it acts on whatever's currently on screen immediately, without waiting for
   a second number or an `=` press.
+- `±` toggles the sign of the number currently on screen — the only way to enter a negative
+  operand, since keypad-driven entry has no minus key of its own (`−` is reserved for
+  subtraction). It's a no-op on an untouched `0`. Decimals work via `.` as on any calculator.
 - `AC` resets memory to 0 and clears the display.
 
 A small **expression line** above the main display shows the confirmed number and operator
@@ -172,12 +176,20 @@ for equals, and `Escape` for `AC`.
 ### Layout
 
 The keypad follows Apple's own scientific-calculator arrangement rather than the plain
-4-operator grid, since this calculator has seven operations, not four: `AC` and the three
-modifier keys (`xʸ`, `√`, `%`) sit in a muted top row, digits fill the main grid with the
-four chainable arithmetic operators in a column of vivid orange to their right, and `=` is
-a full-width closing action at the bottom — the one deliberate departure from a literal
+4-operator grid, since this calculator has seven operations, not four: `AC`, `±`, and the
+three modifier keys (`xʸ`, `√`, `%`) sit in a muted top row, digits fill the main grid with
+the four chainable arithmetic operators in a column of vivid orange to their right, and `=`
+is a full-width closing action at the bottom — the one deliberate departure from a literal
 iPhone key shape, sized and colored to read as "this is the button that talks to the
 server," distinct from the momentary operator presses.
+
+### Theme
+
+The app follows the OS's `prefers-color-scheme` by default, but a switch in the top-right
+corner lets you override it — it initializes to whatever the OS preference is, then behaves
+as a plain manual toggle from there. The switch sets `data-theme` on `<html>`, which a CSS
+rule of equal-or-higher specificity than the `prefers-color-scheme` query uses to override
+the OS setting whichever way you pick.
 
 ## Design rationale
 
@@ -223,8 +235,8 @@ npm run test -- --coverage   # Vitest + v8 coverage; report at coverage/index.ht
 ```
 
 Current coverage: `internal/calculator` 100%, `internal/api` ~80% (table-driven tests for
-every operation, error path, and the 400/422/405 status mapping); frontend ~95% overall,
+every operation, error path, and the 400/422/405 status mapping); frontend ~98% overall,
 100% of statements in every component, including mocked-`fetch` success/error/network-failure
 cases for the API client and a full interaction test suite for `Calculator` and
-`CalculatorPad` (confirm-on-operator, chaining, the unary `√` modifier, the expression line,
-keyboard entry, and AC).
+`CalculatorPad` (confirm-on-operator, chaining, the unary `√` modifier, `±` sign toggling,
+the expression line, keyboard entry, and AC) plus the theme switch/OS-preference detection.
